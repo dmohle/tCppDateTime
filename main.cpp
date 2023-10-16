@@ -1,42 +1,30 @@
 #include <iostream>
 #include <chrono>
-#include <sstream>
-#include <string>
+#include <ctime>
 
 using namespace std;
 
-// Function to calculate the birthdate for a 4-year-old hyena born in the spring
-string calculateHyenaBirthdate(string description, string birthSeason) {
-
-    // Parse the birth season and create a date for March 21 of the current year
-    chrono::system_clock::time_point today = chrono::system_clock::now();
-    time_t now_c = chrono::system_clock::to_time_t(today);
-    tm now_tm = *localtime(&now_c);
-
-    int birthMonth = 3;  // March
-    int birthDay = 21;
-
-    // Check if the description contains the word "female" to determine the gender
-    bool isFemale = (description.find("female") != string::npos);
-
-    // Calculate the birth year based on the age (4 years old)
-    int birthYear = now_tm.tm_year + 1900 - 4;
-
-    // Create a string to represent the birthdate
-    ostringstream oss;
-    oss << "The " << (isFemale ? "female " : "") << "hyena born in " << birthSeason << " has a birthdate of "
-        << birthMonth << "/" << birthDay << "/" << birthYear;
-
-    return oss.str();
-}
-
 int main() {
-    string description = "4 year old female hyena";
-    string birthSeason = "born in spring";
+    // Create a time_point for "2019-03-21" 00:00:00
+    tm dateInfo = {};
+    dateInfo.tm_year = 2019 - 1900; // Years since 1900
+    dateInfo.tm_mon = 3 - 1;        // Months are zero-based
+    dateInfo.tm_mday = 21;
+    time_t time = mktime(&dateInfo);
+    chrono::system_clock::time_point timePoint2019 = chrono::system_clock::from_time_t(time);
 
-    string birthdate = calculateHyenaBirthdate(description, birthSeason);
-    cout << "4 year old hyena's birthdate is: " << birthdate << endl;
+    // Get the current time
+    chrono::system_clock::time_point now = chrono::system_clock::now();
 
+    // Calculate the time difference
+    chrono::duration<double> timeDifference = now - timePoint2019;
+
+    // Calculate age in decimal years
+    double hoursOld = timeDifference.count() / 3600; // Convert timeDifference to hours
+    double exactAge = hoursOld / 24 / 365; // Convert hours to years
+
+    // Output the exact age
+    cout << "Exact age in years: " << exactAge << endl;
 
     return 0;
 }
